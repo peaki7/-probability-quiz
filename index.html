@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08090d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Probability">
+<title>Probability — Premium Quiz</title>
+<style>
+:root{--bg:#08090d;--panel:#11131a;--panel2:#181b24;--text:#f7f7f8;--muted:#989cab;--accent:#d6b36a;--accent2:#f1d898;--good:#65d391;--bad:#ff6b6b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:radial-gradient(circle at 50% -10%,#292116 0,#0b0c11 38%,#08090d 72%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;min-height:100vh}
+.app{width:min(720px,100%);margin:auto;padding:env(safe-area-inset-top) 18px calc(28px + env(safe-area-inset-bottom));min-height:100vh}
+.card{background:linear-gradient(145deg,#151720,#0f1117);border:1px solid #ffffff12;border-radius:30px;box-shadow:0 24px 70px #0008;padding:24px}
+.logo{width:76px;height:76px;border-radius:24px;margin:auto;display:grid;place-items:center;font-size:40px;background:linear-gradient(145deg,#e7c77e,#8f6d32);box-shadow:0 10px 35px #c39a4938}
+h1{font-size:34px;margin:18px 0 4px;text-align:center;letter-spacing:-1px}.sub{text-align:center;color:var(--muted);margin-bottom:25px}
+.levels{display:grid;gap:12px}.level{width:100%;border:1px solid #ffffff12;background:var(--panel2);color:var(--text);border-radius:19px;padding:17px;text-align:right;display:flex;align-items:center;gap:13px;font-size:16px}.level .icon{font-size:25px}.level.active{border-color:#d6b36a88;background:linear-gradient(90deg,#d6b36a18,#ffffff06)}.check{margin-right:auto;color:var(--accent)}
+.primary{border:0;background:linear-gradient(135deg,#efd28a,#a77d32);color:#17130b;font-weight:800;border-radius:19px;padding:17px;width:100%;font-size:17px;margin-top:16px;box-shadow:0 12px 30px #c39a4930}
+.hint{margin-top:14px;text-align:center;color:var(--muted);font-size:13px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}.pill{border:1px solid #ffffff12;background:#ffffff08;border-radius:99px;padding:8px 12px;color:var(--muted);font-size:13px}
+.timer{position:relative;width:62px;height:62px;display:grid;place-items:center}.timer svg{position:absolute;inset:0;transform:rotate(-90deg)}.timer circle{fill:none;stroke-width:5}.track{stroke:#ffffff10}.progress{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .4s linear}.timeText{font-size:16px;font-weight:800}
+.question{font-size:23px;line-height:1.55;font-weight:750;margin:22px 2px}.answers{display:grid;gap:11px}.answer{border:1px solid #ffffff10;background:#151821;color:var(--text);border-radius:18px;padding:17px;text-align:right;font-size:16px;line-height:1.4;min-height:58px}.answer.selected{border-color:#d6b36a99;background:#d6b36a12}.answer.correct{border-color:#65d39199;background:#65d39112}.answer.wrong{border-color:#ff6b6b99;background:#ff6b6b12}.answer:disabled{opacity:1}
+.feedback{margin-top:15px;border-radius:18px;padding:16px;background:#ffffff07;border:1px solid #ffffff0c;line-height:1.7;min-height:60px}.good{color:var(--good)}.bad{color:var(--bad)}
+.next{display:none;border:0;width:100%;padding:17px;margin-top:12px;border-radius:18px;background:linear-gradient(135deg,#efd28a,#a77d32);font-weight:800;font-size:17px;color:#17130b}
+.result{text-align:center}.medal{font-size:70px;margin:4px}.score{font-size:64px;font-weight:900;margin:8px;color:var(--accent2)}.stat{display:flex;justify-content:space-between;background:#ffffff07;border:1px solid #ffffff0c;border-radius:16px;padding:14px;margin-top:9px}.label{color:var(--muted)}.best{color:var(--accent2);font-weight:800}.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="app"><div class="card" id="app"></div></div>
+<script>
+const BANK={
+سهل:[
+["ما احتمال ظهور الرقم 4 عند رمي حجر نرد مرة واحدة؟",["1/2","1/3","1/6","1/4"],2,"هناك نتيجة واحدة مناسبة من أصل 6: 1/6."],
+["ما احتمال ظهور رقم زوجي عند رمي حجر نرد؟",["1/6","1/3","1/2","2/3"],2,"الأرقام 2 و4 و6: ثلاث نتائج من أصل 6 = 1/2."],
+["ما احتمال ظهور رقم أكبر من 3؟",["1/6","1/3","1/2","2/3"],2,"الأرقام 4 و5 و6، أي 3 من أصل 6 = 1/2."],
+["ما احتمال ظهور رقم فردي؟",["1/6","1/3","1/2","2/3"],2,"الأرقام 1 و3 و5، أي 3 من أصل 6 = 1/2."],
+["ما احتمال ظهور رقم أقل من 5؟",["1/3","1/2","2/3","5/6"],2,"الأرقام 1 و2 و3 و4: أربع نتائج من أصل 6 = 2/3."]
+],
+متوسط:[
+["رميت حجر نرد مرتين. ما احتمال أن يكون مجموع الرقمين 7؟",["1/12","1/6","1/4","1/3"],1,"هناك 6 نتائج مجموعها 7 من أصل 36، إذن 1/6."],
+["رميت حجر نرد مرتين. ما احتمال ظهور الرقم 6 في المرتين؟",["1/6","1/12","1/36","1/18"],2,"1/6 × 1/6 = 1/36."],
+["رميت حجر نرد مرتين. ما احتمال أن يكون الرقمان زوجيين؟",["1/4","1/3","1/2","2/3"],0,"1/2 × 1/2 = 1/4."],
+["رميت حجر نرد مرتين. ما احتمال ظهور 6 مرة واحدة على الأقل؟",["1/6","5/18","11/36","1/3"],2,"1 − (5/6)² = 11/36."],
+["رميت حجرَي نرد. ما احتمال أن يكون المجموع أكبر من 9؟",["1/6","1/4","5/18","1/3"],0,"المجاميع 10 و11 و12 لها 6 نتائج من أصل 36 = 1/6."]
+],
+صعب:[
+["رميت حجر نرد مرتين. ما احتمال أن يكون مجموع الرقمين عددًا زوجيًا؟",["1/4","1/3","1/2","2/3"],2,"المجموع زوجي إذا كان الرقمان بنفس النوع. الاحتمال = 1/2."],
+["لديك 8 أشخاص. كم زوجًا مختلفًا يمكن اختياره؟",["28","16","32","56"],0,"C(8,2)=8×7÷2=28."],
+["كيس فيه 5 كرات حمراء و3 زرقاء. سحبت كرتين دون إرجاع. ما احتمال أن تكونا حمراوين؟",["5/14","5/16","10/21","25/64"],0,"5/8 × 4/7 = 5/14."],
+["رميت حجر نرد 3 مرات. ما احتمال ظهور الرقم 6 مرة واحدة على الأقل؟",["1/6","25/72","91/216","125/216"],2,"1 − (5/6)³ = 91/216."],
+["رميت عملة عادلة 4 مرات. ما احتمال ظهور وجهين بالضبط؟",["1/4","3/8","1/2","5/8"],1,"C(4,2)=6 من أصل 16، لذلك 3/8."]
+]};
+
+let level="صعب",playerName="",data=[],idx=0,score=0,left=30,timer=null,started=0,elapsed=0,answered=false;
+const app=document.getElementById("app");
+function home(){
+app.innerHTML=`<div class="logo">🎲</div>
+<h1>Probability</h1>
+<div class="sub">اختبار الاحتمالات — النسخة الفاخرة</div>
+<div style="margin-bottom:18px">
+<label style="display:block;color:var(--muted);font-size:14px;margin-bottom:8px">اسم المتدرب</label>
+<input id="playerName" type="text" maxlength="40" placeholder="اكتب اسمك هنا"
+style="width:100%;padding:17px;border-radius:18px;border:1px solid #ffffff12;background:#151821;color:var(--text);font-size:17px;outline:none">
+</div>
+<div class="levels">${[['سهل','🌱'],['متوسط','⚡'],['صعب','🔥']].map(x=>`<button class="level ${level===x[0]?'active':''}" data-level="${x[0]}"><span class="icon">${x[1]}</span><b>${x[0]}</b><span class="check">${level===x[0]?'✓':''}</span></button>`).join('')}</div>
+<button class="primary" id="start">ابدأ الاختبار</button>
+<div class="hint">5 أسئلة • 30 ثانية لكل سؤال • شهادة باسمك عند النهاية</div>`;
+document.querySelectorAll("[data-level]").forEach(b=>b.onclick=()=>{level=b.dataset.level;home()});
+document.getElementById("start").onclick=()=>{
+ const input=document.getElementById("playerName");
+ const name=input.value.trim();
+ if(!name){input.style.borderColor="var(--bad)";input.placeholder="فضلاً اكتب اسمك أولاً";return}
+ playerName=name;startQuiz();
+};
+}
+function startQuiz(){data=BANK[level];idx=0;score=0;elapsed=0;renderQuestion()}
+function renderQuestion(){
+clearInterval(timer);answered=false;left=30;started=Date.now();
+const q=data[idx];
+app.innerHTML=`<div class="top"><span class="pill">${level} • ${idx+1}/${data.length}</span><div class="timer"><svg width="62" height="62"><circle class="track" cx="31" cy="31" r="26"/><circle id="ring" class="progress" cx="31" cy="31" r="26" stroke-dasharray="163.36" stroke-dashoffset="0"/></svg><span class="timeText" id="time">30</span></div></div>
+<div class="question">${q[0]}</div><div class="answers" id="answers">${q[1].map((x,k)=>`<button class="answer" data-k="${k}">${String.fromCharCode(65+k)}) ${x}</button>`).join("")}</div>
+<div class="feedback" id="feedback"></div><button class="next" id="next">${idx===data.length-1?'عرض النتيجة':'السؤال التالي ➜'}</button>`;
+document.querySelectorAll(".answer").forEach(b=>b.onclick=()=>choose(+b.dataset.k));
+document.getElementById("next").onclick=next;
+timer=setInterval(()=>{left--;document.getElementById("time").textContent=left;document.getElementById("ring").style.strokeDashoffset=(163.36*(1-left/30));if(left<=0){clearInterval(timer);choose(-1)}},1000);
+}
+function choose(k){
+if(answered)return;answered=true;clearInterval(timer);elapsed+=Math.min(30,Math.round((Date.now()-started)/1000));
+const q=data[idx],buttons=document.querySelectorAll(".answer");
+buttons.forEach((b,j)=>{b.disabled=true;if(j===q[2])b.classList.add("correct");if(j===k&&k!==q[2])b.classList.add("wrong");});
+if(k===q[2]){score++;document.getElementById("feedback").innerHTML=`<span class="good"><b>✓ إجابة صحيحة</b></span><br>${q[3]}`}else if(k===-1){document.getElementById("feedback").innerHTML=`<span class="bad"><b>⏰ انتهى الوقت</b></span><br>الإجابة الصحيحة: ${String.fromCharCode(65+q[2])}) ${q[1][q[2]]}<br>${q[3]}`}else{document.getElementById("feedback").innerHTML=`<span class="bad"><b>✕ إجابة خاطئة</b></span><br>الإجابة الصحيحة: ${String.fromCharCode(65+q[2])}) ${q[1][q[2]]}<br>${q[3]}`;}
+document.getElementById("next").style.display="block";
+}
+function next(){idx++;if(idx<data.length)renderQuestion();else result()}
+function result(){
+clearInterval(timer);
+let pct=Math.round(score/data.length*100),key="best_"+level,best=Number(localStorage.getItem(key)||0);
+if(score>best){best=score;localStorage.setItem(key,best)}
+let msg=pct===100?"ممتاز جدًا 🔥":pct>=80?"أداء رائع 👏":pct>=60?"جيد جدًا 💪":"واصل التدريب 🎯";
+const date=new Date().toLocaleDateString("ar-SA");
+app.innerHTML=`<div class="result">
+<div style="border:1px solid #d6b36a55;border-radius:24px;padding:24px;background:linear-gradient(145deg,#19150e,#101117);box-shadow:0 20px 60px #0008">
+<div style="font-size:42px">🏆</div>
+<div style="color:var(--accent);font-size:13px;letter-spacing:2px;margin-top:4px">CERTIFICATE OF COMPLETION</div>
+<h1 style="font-size:28px">شهادة إتمام الاختبار</h1>
+<div style="color:var(--muted);margin:18px 0 6px">تشهد هذه الشهادة بأن</div>
+<div style="font-size:30px;font-weight:900;color:var(--accent2);word-break:break-word">${escapeHTML(playerName)}</div>
+<div style="color:var(--muted);margin:8px 0 20px">قد أتم اختبار الاحتمالات بنجاح</div>
+<div class="stat"><span class="label">المستوى</span><b>${level}</b></div>
+<div class="stat"><span class="label">النتيجة</span><b>${score}/${data.length}</b></div>
+<div class="stat"><span class="label">النسبة</span><b>${pct}%</b></div>
+<div class="stat"><span class="label">الزمن</span><b>${elapsed} ثانية</b></div>
+<div style="margin-top:18px;color:var(--muted);font-size:12px">تاريخ الإصدار: ${date}</div>
+</div>
+<div style="margin-top:15px;color:var(--muted)">${msg}</div>
+<button class="primary" id="again">إعادة الاختبار</button>
+<button class="level" id="home" style="margin-top:10px;justify-content:center">العودة للرئيسية</button>
+</div>`;
+document.getElementById("again").onclick=startQuiz;
+document.getElementById("home").onclick=home;
+}
+
+function escapeHTML(value){
+return value.replace(/[&<>"']/g,function(ch){
+return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[ch];
+});
+}
+home();
+</script>
+</body></html>
